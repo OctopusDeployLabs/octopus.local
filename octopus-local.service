@@ -1,0 +1,13 @@
+[Unit]
+Description=#{Project.Octopus.ServiceDescription}
+Requires=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory=#{Project.Octopus.InstallLocation}
+ExecStart=/usr/bin/docker-compose up
+ExecStop=/usr/bin/docker-compose stop
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

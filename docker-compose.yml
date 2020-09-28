@@ -1,0 +1,48 @@
+version: "3"
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      SA_PASSWORD: ""
+      ACCEPT_EULA: "N"
+      # Prevent SQL Server from consuming the defult of 80% physical memory.
+      MSSQL_MEMORY_LIMIT_MB: 2048
+    ports:
+      - 1401:1433
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/opt/mssql-tools/bin/sqlcmd",
+          "-U",
+          "sa",
+          "-P",
+          "thisisn'ttherightpassword",
+          "-Q",
+          "select 1",
+        ]
+      interval: 10s
+      retries: 10
+    volumes:
+      - ./mssql:/var/opt/mssql/data
+  octopus-server:
+    image: octopusdeploy/octopusdeploy:latest
+    privileged: true
+    environment:
+      ACCEPT_EULA: "N"
+      OCTOPUS_SERVER_NODE_NAME: ""
+      DB_CONNECTION_STRING: ""
+      ADMIN_USERNAME: ""
+      ADMIN_PASSWORD: ""
+      ADMIN_EMAIL: ""
+      OCTOPUS_SERVER_BASE64_LICENSE: ""
+      MASTER_KEY: ""
+    ports:
+      - 8080:8080
+      - 10943:10943
+    depends_on:
+      - db
+    volumes:
+      - ./taskLogs:/taskLogs
+      - ./artifacts:/artifacts
+      - ./repository:/repository
