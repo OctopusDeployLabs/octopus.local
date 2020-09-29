@@ -10,6 +10,8 @@ server {
 
         server_name octopus.local;
 
+        client_max_body_size 5G;
+
         location / {
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;
