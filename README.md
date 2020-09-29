@@ -11,7 +11,20 @@ It is developed and tested against Ubuntu 20.04.
 
 ### Certificates
 
-Todo
+You will need a certificate for `octopus.local`. At the bottom of [this page](https://letsencrypt.org/docs/certificates-for-localhost/) there are instructions for creating a self-signed certificate.
+
+You can create a key for `octopus.local` by modifying a few values.
+
+```
+openssl req -x509 -out octopus.crt -keyout octopus.key \
+  -newkey rsa:2048 -nodes -sha256 \
+  -subj '/CN=octopus.local' -extensions EXT -config <( \
+   printf "[dn]\nCN=octopus.local\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:octopus.local\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
+```
+
+Make note of where you store these files. You'll need to provide the paths to the files in the variables step later.
+
+You'll need to import the certificate to any client computer or browser used to connect to https://octopus.local. Chrome will still give you a warning because the certificate is self-signed.
 
 ### Octopus Instance
 
@@ -65,6 +78,20 @@ Create a new project and navigate to **Variables > Project**. Configure the foll
 | services:octopus-server:ports:0                                   | Text      | #{Project.Octopus.Port}:8080     |                                                                                   |
 
 ### Project Deployment Process
+
+Navigate to **Deployments > Process**. Click **Add Step** and add a **Deploy a Package** step.
+
+Click on **Configure Features** and choose only **Customer Installation Directory**, **Structured Configuration Variables**, and **Substitute Variables in Templates**.
+
+Choose the target role that you assigned to your Linux server target.
+
+Choose your GitHub package feed and enter `OctopusDeployLabs/octopus.local` as the package ID.
+
+Set the **Custom Install Directory** to `#{Project.Octopus.InstallLocation}`.
+
+Set the **Structured Configuration Variables Target Files** to `docker-compose.yml`.
+
+Set the **Substitute Variables in Templates Target Files** to `octopus.local` and `octopus-local.service`. These entries must be separated by a new line character.
 
 ## Files
 
