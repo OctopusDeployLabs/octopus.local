@@ -19,9 +19,16 @@ if [ ! -d "sqlserver" ]; then
     echo "sqlserver/ configured."
 fi
 
+docker-compose pull
 docker-compose up -d
+
 mv octopus-local.service /etc/systemd/system
 mv octopus.local /etc/nginx/sites-available
+
+if [ ! -e "/etc/nginx/sites-enabled/octopus.local" ]; then
+    echo "Create /etc/nginx/sites-enabled/octopus.local."
+    ln -s /etc/nginx/sites-available/octopus.local /etc/nginx/sites-enabled/octopus.local
+fi
 
 echo "Start octopus-local."
 systemctl is-enabled --quiet octopus-local || systemctl enable octopus-local

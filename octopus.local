@@ -1,8 +1,8 @@
 server {
         listen 443 ssl;
 
-        ssl_certificate /etc/ssl/octopus.crt;
-        ssl_certificate_key /etc/ssl/octopus.key;
+        ssl_certificate #{Project.Nginx.CertificateLocation};
+        ssl_certificate_key #{Project.Nginx.CertificateKeyLocation};
         ssl_session_cache shared:SSL:20m;
         ssl_session_timeout 180m;
         ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
