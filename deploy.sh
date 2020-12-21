@@ -1,6 +1,7 @@
 echo "Stop octopus-local."
 systemctl is-active --quiet octopus-local && systemctl stop octopus-local
 
+docker-compose pull
 docker-compose down
 
 if [ ! -d "mssql" ]; then
@@ -19,7 +20,6 @@ if [ ! -d "sqlserver" ]; then
     echo "sqlserver/ configured."
 fi
 
-docker-compose pull
 docker-compose up -d
 
 mv octopus-local.service /etc/systemd/system
@@ -35,8 +35,8 @@ systemctl is-enabled --quiet octopus-local || systemctl enable octopus-local
 systemctl start octopus-local
 echo "Reload systemctl daemon."
 systemctl daemon-reload
-echo "Restart nginx."
-systemctl restart nginx
+echo "Reload nginx."
+systemctl reload nginx
 
 write_highlight "[octopus.local](https://octopus.local)"
 
